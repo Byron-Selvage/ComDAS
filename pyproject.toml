@@ -1,0 +1,36 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cdas"
+version = "0.1.0"
+description = "Compressed extensions for DASCORE patches and file IO"
+readme = "README.md"
+requires-python = ">=3.11"
+authors = [{ name = "Byron Selvage" }]
+dependencies = [
+	"numpy>=1.24",
+	"dascore>=0.1",
+]
+
+[project.optional-dependencies]
+zfp = [
+	"zfpy>=1.0",
+]
+dev = [
+	"pytest>=7.0",
+	"ruff>=0.5",
+]
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.packages.find]
+include = ["cdas*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[project.entry-points."dascore.fiber_io"]
+zfp__1_0 = "cdas.io.zfp_fiberio:ZFPV1"
