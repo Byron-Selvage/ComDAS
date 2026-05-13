@@ -3,7 +3,7 @@ requires = ["pdm-backend"]
 build-backend = "pdm.backend"
 
 [project]
-name = "CDAS"
+name = "ComDAS"
 version = "0.1.0"
 description = "DASCORE companion package that adds support for compressed DAS data"
 readme = "README.md"
@@ -35,7 +35,7 @@ docs = [
 include-package-data = true
 
 [tool.setuptools.packages.find]
-include = ["cdas*"]
+include = ["comdas*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
