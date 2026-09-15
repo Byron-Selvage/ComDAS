@@ -1,6 +1,6 @@
 [build-system]
-requires = ["pdm-backend"]
-build-backend = "pdm.backend"
+requires = ["setuptools>=61", "setuptools-scm"]
+build-backend = "setuptools.build_meta"
 
 [project]
 name = "ComDAS"
@@ -8,28 +8,26 @@ version = "0.1.0"
 description = "DASCORE companion package that adds support for compressed DAS data"
 readme = "README.md"
 requires-python = ">=3.10"
+license = {text = "LGPL-3.0-or-later"}
 authors = [
     {name = "Byron-Selvage", email = "bselvage@mines.edu"},
 ]
+keywords = ["dascore", "compression", "das", "dasdae"]
+
 dependencies = [
-    "numpy",
-    "dascore",
+    "numpy>=1.24",
+    "dascore>=0.1.0",
+    "h5py",
 ]
-license = {text = "LGPL-3.0-or-later"}
 
 [project.optional-dependencies]
 dev = [
 	"pytest",
 	"ruff",
-]
-docs = [
     "sphinx",
     "furo",
     "sphinx-autodoc-typehints",
 ]
-
-[tool.setuptools]
-include-package-data = true
 
 [tool.setuptools.packages.find]
 include = ["comdas*"]
@@ -37,10 +35,8 @@ include = ["comdas*"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 
-[tool.pdm]
-distribution = true
 [project.entry-points."dascore.fiber_io"]
-zfp__1_0 = "cdas.io.zfp_fiberio:ZFPV1"
+COMDAS__V1 = "comdas.io.h5_container:ComdasV1"
 
 [tool.ruff]
 line-length = 80
@@ -48,10 +44,3 @@ line-length = 80
 [tool.ruff.lint]
 select = ["E4", "E7", "E9", "F", "W"]
 ignore = []
-
-[tool.ruff.format]
-docstring-code-format = true
-docstring-code-line-length = 60
-
-[tool.ruff.lint.pycodestyle]
-max-doc-length = 80
