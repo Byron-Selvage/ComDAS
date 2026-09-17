@@ -21,13 +21,22 @@ class CompressedPayload:
     :vartype original_shape: tuple[int, ...]
     :ivar dtype: The data type of the array before compression.
     :vartype dtype: numpy.dtype
-    :ivar compression_params: The parameters used for compression.
-    :vartype compression_params: dict
     """
 
     original_shape: tuple[int, ...]
     dtype: np.dtype
-    compression_params: dict
+
+    @property
+    def compression_params(self) -> dict:
+        """
+        The parameters used for compression.
+
+        The default implementation returns an empty dict. Codecs with
+        parameters relevant to re-encoding should override this.
+
+        :rtype: dict
+        """
+        return {}
 
 
 class Codec(ABC):
