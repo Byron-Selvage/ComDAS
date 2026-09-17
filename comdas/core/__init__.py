@@ -1,1 +1,0 @@
-"""Core compressed patch primitives."""
