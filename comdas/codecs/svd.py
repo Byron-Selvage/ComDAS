@@ -32,11 +32,23 @@ class SVDPayload(CompressedPayload):
 
     @property
     def rank(self) -> int:
-        """The truncation rank ``k`` used on this payload.
+        """
+        The truncation rank ``k`` used on this payload.
 
         :rtype: int
         """
         return self.s.shape[0]
+
+    @property
+    def compression_params(self) -> dict:
+        """
+        The compression parameters used for this payload.
+
+        :rtype: dict
+        """
+        return {
+            "rank": self.rank,
+        }
 
 
 class SVDCodec(Codec):
