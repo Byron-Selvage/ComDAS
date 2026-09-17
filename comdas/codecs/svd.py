@@ -40,7 +40,7 @@ class SVDPayload(CompressedPayload):
 
 class SVDCodec(Codec):
     """
-    Truncated-SVD codec for 2D arrays.
+    Truncated-Singular Value Decomposition (SVD) codec for 2D arrays.
 
     This codec compresses a 2D array by computing its truncated singular value
     decomposition (SVD) and storing the left singular vectors, singular
@@ -50,6 +50,9 @@ class SVDCodec(Codec):
     as a retained energy fraction ``energy`` in ``(0,1]``. Exactly one option
     must be specified, either as a codec-level default or per-call parameter.
 
+    SVD does not implement partial writes efficiently, so the full array is
+    re-encoded every 10,000 pending writes (or on demand).
+
     :param rank: Default truncation rank ``k`` to use if not specified per-call.
     :type rank: int | None
     :param energy: Default retained energy fraction to use if not specified per-call.
@@ -58,6 +61,9 @@ class SVDCodec(Codec):
     """
     name = "SVD"
     version = "1"
+
+    # Writes are expensive with SVD
+    max_pending_writes = 10_000
 
     def __init__(self, rank: int | None = None, energy: float | None = None):
         if rank is not None and energy is not None:

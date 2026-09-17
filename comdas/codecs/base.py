@@ -39,15 +39,30 @@ class Codec(ABC):
     the reader to automatically recognize and use the appropriate codec by name,
     without having to import every codec.
 
+    Most codecs do not support random access writes and algorithms can be
+    inefficient at performing many small writes, so writes to the payload are
+    buffered until max_pending_writes is reached. Once this value is exceeded,
+    the entire array will be decompressed, the writes applied, and the
+    array recompressed. By default, this value is set to 10,000.
+
+    If a codec supports random access writes efficiently, it should
+    implement the :meth:`partial_write` method. If this method is
+    implemented, it will always be immediately used for applying writes,
+    bypassing max_pending_writes entirely.
+
     :cvar name: Unique, human-readable name for the codec.
     :vartype name: str
     :cvar version: Codec format version, bumped if the codec's payload
         structure changes in a way that is not backward-compatible.
     :vartype version: str
+    :cvar max_pending_writes: Maximum number of pending writes before automatic consolidation.
+        This is only used by codecs that do not implement :meth:`partial_write`.
+    :vartype max_pending_writes: int
     """
 
     name: str = ""
     version: str = "1"
+    max_pending_writes: int = 10_000
 
     _registry: dict[str, type[Codec]] = {}
 
@@ -125,6 +140,49 @@ class Codec(ABC):
         :rtype: numpy.ndarray
         """
         return self.decode(payload)[key]
+
+    def partial_write(self, payload: CompressedPayload, key, value) -> CompressedPayload:
+        """
+        Write ``value`` into the compressed representation at ``key``,
+        without a full decode -> update -> re-encode round trip.
+
+        This is an optional method, most codecs do not support random access
+        writes. The default implementation always raises a
+        :class:`NotImplementedError`, which
+        :class:`~comdas.arrays.compressed_array.CompressedArray`
+        interprets as "this codec or write attempt doesn't
+        support true partial writes" and falls back to its overlay +
+        :attr:`default_overlay_flush_threshold` strategy instead.
+
+        A codec should implement this for the cases it can handle
+        cheaply and raise :class:`NotImplementedError` for cases it can't.
+        The fallback applies per call, not just
+        per codec. See :meth:`supports_partial_write`.
+
+        Implementations must apply exactly the same assignment
+        semantics as ``dense_array[key] = value`` would on the fully
+        decompressed array, including NumPy's broadcasting rules.
+
+        :param payload: The payload before the write.
+        :type payload: CompressedPayload
+        :param key: A NumPy-style index/slice key.
+        :param value: The value(s) to write, broadcast against the
+            shape implied by ``key`` exactly as plain NumPy assignment
+            would.
+        :returns: The payload reflecting the write.
+        :rtype: CompressedPayload
+        :raises NotImplementedError: Always, unless overridden.
+        """
+        raise NotImplementedError(f"{type(self).__name__} does not support partial_write().")
+
+    def supports_partial_write(self) -> bool:
+        """
+        Whether this codec has overridden :meth:`partial_write`.
+
+        :returns: True if :meth:`partial_write` is overridden.
+        :rtype: bool
+        """
+        return type(self).partial_write is not Codec.partial_write
 
     @abstractmethod
     def compressed_size_bytes(self, payload: CompressedPayload) -> int:
