@@ -11,6 +11,7 @@ import numpy as np
 
 from comdas.codecs.base import Codec, CompressedPayload
 
+
 @dataclass
 class SVDPayload(CompressedPayload):
     """
@@ -59,6 +60,7 @@ class SVDCodec(Codec):
     :type energy: float | None
     :raises ValueError: If both of ``rank`` and ``energy`` are specified.
     """
+
     name = "SVD"
     version = "1"
 
@@ -67,7 +69,9 @@ class SVDCodec(Codec):
 
     def __init__(self, rank: int | None = None, energy: float | None = None):
         if rank is not None and energy is not None:
-            raise ValueError("Provide at most one of rank / energy to act as codec default.")
+            raise ValueError(
+                "Provide at most one of rank / energy to act as codec default."
+            )
         self.default_rank = rank
         self.default_energy = energy
 
@@ -98,10 +102,14 @@ class SVDCodec(Codec):
         """
         array = np.asarray(array)
         if array.ndim != 2:
-            raise ValueError(f"SVDCodec only supports 2D arrays, got shape {array.shape}")
+            raise ValueError(
+                f"SVDCodec only supports 2D arrays, got shape {array.shape}"
+            )
 
         if rank is not None and energy is not None:
-            raise ValueError("Specify only one of `rank` or `energy` per call or use the codec default.")
+            raise ValueError(
+                "Specify only one of `rank` or `energy` per call or use the codec default."
+            )
         if rank is None and energy is None:
             rank = self.default_rank
             energy = self.default_energy
@@ -157,8 +165,13 @@ class SVDCodec(Codec):
 
         # If using complex indexing (anything more than a simple int or slice)
         # Fall back to full decode
-        if not (isinstance(row_key, (int, np.integer, slice)) and isinstance(col_key, (int, np.integer, slice))):
-            warn("Only simple int/slice indexing is supported for partial decoding. Fully decoding entire array and then applying the index.")
+        if not (
+            isinstance(row_key, (int, np.integer, slice))
+            and isinstance(col_key, (int, np.integer, slice))
+        ):
+            warn(
+                "Only simple int/slice indexing is supported for partial decoding. Fully decoding entire array and then applying the index."
+            )
             return self.decode(payload)[key]
 
         row_is_int = isinstance(row_key, (int, np.integer))

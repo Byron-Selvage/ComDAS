@@ -141,7 +141,9 @@ class Codec(ABC):
         """
         return self.decode(payload)[key]
 
-    def partial_write(self, payload: CompressedPayload, key, value) -> CompressedPayload:
+    def partial_write(
+        self, payload: CompressedPayload, key, value
+    ) -> CompressedPayload:
         """
         Write ``value`` into the compressed representation at ``key``,
         without a full decode -> update -> re-encode round trip.
@@ -173,7 +175,9 @@ class Codec(ABC):
         :rtype: CompressedPayload
         :raises NotImplementedError: Always, unless overridden.
         """
-        raise NotImplementedError(f"{type(self).__name__} does not support partial_write().")
+        raise NotImplementedError(
+            f"{type(self).__name__} does not support partial_write()."
+        )
 
     def supports_partial_write(self) -> bool:
         """
