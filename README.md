@@ -1,9 +1,9 @@
 # ComDAS
 
-ComDAS (Compressed DAS) is a companion package to DASCORE that adds support for compressed DAS data. ComDAS depends on DASCORE directly and is designed to extend DASCORE behavior.
+ComDAS (Compressed DAS) is a companion package to [DASCore](https://github.com/DASDAE/dascore) that adds support for compressed DAS data. ComDAS depends on DASCORE directly and is designed to extend DASCORE behavior.
 
 ## Features
-- IO support for `.zfp` file extensions containing DAS data compressed with the ZFP compression codec
+- :shrug:
 
 ComDAS is in active development. Additional features coming soon. 
 
