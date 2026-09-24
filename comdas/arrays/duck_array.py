@@ -1,6 +1,7 @@
 """
-Implements NumPy-like array (duck array) [duckarrays]_ to hold compressed Patch data.
-.. [duckarrays] https://docs.xarray.dev/en/stable/user-guide/duckarrays.html
+Implements a NumPy-like `duck array
+<https://docs.xarray.dev/en/stable/user-guide/duckarrays.html>`_ for compressed
+Patch data.
 """
 
 from __future__ import annotations
