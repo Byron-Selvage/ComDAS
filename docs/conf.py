@@ -34,3 +34,10 @@ exclude_patterns = []
 
 html_theme = "furo"
 html_static_path = []
+html_title = "ComDAS documentation"
+html_baseurl = "https://byron-selvage.github.io/ComDAS/"
+html_theme_options = {
+    "source_repository": "https://github.com/Byron-Selvage/ComDAS/",
+    "source_branch": "main",
+    "source_directory": "docs/",
+}

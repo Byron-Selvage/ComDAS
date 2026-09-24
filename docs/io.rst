@@ -1,10 +1,14 @@
-IO Support
-==========
+I/O
+===
 
-ComDAS supports reading and writing compressed DAS data to and from compressed data formats. Currently supported formats include:  
+ComDAS provides a codec-agnostic HDF5 container named ``COMDAS``. Installing
+the package registers the format with DASCore, so files written by
+:func:`comdas.write_compressed` can be opened with :func:`dascore.spool`.
 
-- aaaaaaaaaaaaaaaaa
+Writing to an existing COMDAS file appends patches. Each patch records its
+codec and compression parameters, allowing one container to hold data encoded
+with different registered codecs.
 
-.. automodule:: comdas.io
+.. automodule:: comdas.io.h5_container
     :members:
-    :undoc-members:
+    :exclude-members: FORMAT_NAME, FORMAT_VERSION
