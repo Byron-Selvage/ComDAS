@@ -3,6 +3,9 @@ name: Documentation
 on:
   push:
     branches: [main]
+    paths:
+      - "docs/**"
+      - "comdas/**"
   workflow_dispatch:
 
 permissions:
