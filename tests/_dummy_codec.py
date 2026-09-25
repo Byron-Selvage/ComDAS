@@ -107,7 +107,7 @@ class DummyImmediateWriteCodec(DummyCodec):
     """
 
     name = "DUMMY_IMMEDIATE_WRITE_TEST_CODEC"
-    default_overlay_flush_threshold = 0
+    max_pending_writes = 0
 
 
 class DummyPartialWriteCodec(DummyCodec):
