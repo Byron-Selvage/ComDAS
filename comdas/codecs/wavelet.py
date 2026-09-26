@@ -1,5 +1,5 @@
 """
-Wavelet compression for arrays via PyWavelets.
+Wavelet compression via PyWavelets.
 """
 
 from __future__ import annotations
