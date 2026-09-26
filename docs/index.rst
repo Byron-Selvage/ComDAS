@@ -1,76 +1,61 @@
 ComDAS
-******
+======
 
-ComDAS (Compressed DAS) is a companion package to
-`DASCore <https://dascore.org/>`_ for storing and working with compressed
-distributed acoustic sensing data.
+ComDAS (Compressed DAS) lets you store and work with compressed distributed acoustic sensing (DAS) data using ordinary `DASCore <https://dascore.org/>`_ tools.
 
-ComDAS currently provides:
+With ComDAS you can:
 
-* A NumPy-compatible duck array backed by compressed data.
-* A codec interface for adding compression algorithms.
-* Lossy, truncated-SVD compression for two-dimensional arrays.
-* A codec-agnostic HDF5 format registered with DASCore's I/O system.
+* **Shrink DAS data in memory.** Compress a DASCore patch and keep using it like any other.
+* **Save compressed files.** Write patches, spools, or whole directories of raw data to a compressed HDF5 file or files.
+* **Read compressed files with plain DASCore.** Once ComDAS is installed, ``dascore.spool()`` opens compressed files directly without needing to know how the data was compressed.
+* **Choose your compression level.** Pick a codec and set how much detail to keep, from near-lossless to aggressive compression.
+* **Implement your own algorithm.** Add a new compression method by writing a codec class.
+
+Available Codecs
+----------------
+
+.. list-table::
+   :header-rows: 1
+   :widths: 20 35 45
+
+   * - Codec
+     - Main setting
+     - Reference
+   * - :doc:`SVD <codecs/svd>`
+     - ``rank`` or retained ``energy``
+     - `Numpy SVD <https://numpy.org/doc/1.22/reference/generated/numpy.linalg.svd.html>`__
+   * - :doc:`Wavelet <codecs/wavelet>`
+     - ``keep_fraction`` or ``threshold``
+     - `PyWavelets <https://doi.org/10.21105/joss.01237>`__;
+       `DeVore et al. (1992) <https://doi.org/10.1109/18.119733>`__
 
 .. note::
 
-   ComDAS is under active development. The file format and public API may
-   change between releases.
-
-Installation
-------------
-Install from PyPI:
-
-.. code-block:: bash
-
-   pip install comdas
-
-Install from source:
-
-.. code-block:: bash
-
-   git clone https://github.com/byron-selvage/comdas.git
-   cd comdas
-   pip install -e .
-
-Quick Start
------------
-
-Compress an in-memory DASCore patch with a fixed SVD rank:
-
-.. code-block:: python
-
-   import numpy as np
-   import dascore as dc
-   from comdas import SVDCodec, compress_patch
-
-   patch = dc.get_example_patch()
-   compressed = compress_patch(patch, SVDCodec(rank=20))
-
-   # Compressed data supports normal array access and can be materialized.
-   subset = compressed.data[:10, :100]
-   dense = np.asarray(compressed.data)
-
-Write compressed patches to disk and read them through DASCore:
-
-.. code-block:: python
-
-   import dascore as dc
-   from comdas import SVDCodec, write_compressed
-
-   patch = dc.get_example_patch()
-   write_compressed(patch, "compressed.h5", SVDCodec(rank=20))
-
-   spool = dc.spool("compressed.h5")
-   restored_patch = spool[0]
-
-SVD compression is lossy. Choose a fixed ``rank`` or an ``energy`` fraction
-according to the reconstruction quality and storage cost your data requires.
+   ComDAS is under active development. The file format and public API may change between releases.
 
 .. toctree::
    :hidden:
-   :maxdepth: 2
+   :caption: Getting started
 
-   codecs
-   arrays
-   io
+   installation
+   quickstart
+
+.. toctree::
+   :hidden:
+   :caption: Codecs
+
+   codecs/svd
+   codecs/wavelet
+   codecs/add_a_codec
+
+.. toctree::
+   :hidden:
+   :caption: Examples
+
+   examples/compression_comparison
+
+.. toctree::
+   :hidden:
+   :caption: Reference
+
+   api/index
