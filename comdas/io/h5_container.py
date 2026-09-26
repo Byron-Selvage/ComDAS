@@ -226,7 +226,7 @@ def _read_patch(patch_group) -> dc.Patch:
     :param patch_group: An open patch group (e.g. ``f["patches"]["patch_0000"]``).
     :type patch_group: h5py.Group
     :returns: The reconstructed Patch, backed by a
-        :class:`~comdas.arrays.compressed_array.DuckArray`.
+        :class:`~comdas.arrays.duck_array.DuckArray`.
     :rtype: dascore.Patch
     """
     codec_cls = Codec.get_registered(patch_group.attrs["codec_name"])
@@ -352,7 +352,7 @@ class ComdasV1(FiberIO):
             append mode).
         :type resource: h5py.File
         :param codec: The codec to compress every patch in ``spool``
-            with. (e.g. ``SVDCodec(default_rank=20)``.)
+            with. (e.g. ``SVDCodec(rank=20)``.)
         :type codec: Codec
         :param encode_kwargs: Forwarded to ``codec.encode`` for every
             patch.
@@ -361,7 +361,7 @@ class ComdasV1(FiberIO):
         if codec is None:
             raise ValueError(
                 "A `codec` must be provided to write a COMDAS container "
-                "(e.g. codec=SVDCodec(default_rank=20))."
+                "(e.g. codec=SVDCodec(rank=20))."
             )
         resource.attrs["__format__"] = FORMAT_NAME
         resource.attrs[f"__{FORMAT_NAME}_version__"] = FORMAT_VERSION
@@ -394,7 +394,7 @@ def write_compressed(source, path, codec: Codec, **encode_kwargs) -> None:
         than overwriting existing ones.
     :type path: str or pathlib.Path
     :param codec: The codec to compress every patch with, e.g.
-        ``SVDCodec(default_rank=20)``.
+        ``SVDCodec(rank=20)``.
     :type codec: Codec
     :param encode_kwargs: Forwarded to ``codec.encode`` for every
         patch (e.g. ``rank=``/``energy=`` for
@@ -409,11 +409,11 @@ def write_compressed(source, path, codec: Codec, **encode_kwargs) -> None:
         from comdas import write_compressed, SVDCodec
 
         # from an existing uncompressed file
-        write_compressed("raw.h5", "compressed.h5", SVDCodec(default_rank=20))
+        write_compressed("raw.h5", "compressed.h5", SVDCodec(rank=20))
 
         # from a patch already in memory
         patch = dc.get_example_patch()
-        write_compressed(patch, "compressed.h5", SVDCodec(default_rank=20))
+        write_compressed(patch, "compressed.h5", SVDCodec(rank=20))
 
         # reading back needs nothing ComDAS-specific
         read_back = dc.spool("compressed.h5")

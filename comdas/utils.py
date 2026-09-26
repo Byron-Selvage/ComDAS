@@ -24,7 +24,7 @@ def compress_patch(patch, codec: Codec, **encode_kwargs):
     :type patch: dascore.Patch
     :param codec: The codec to compress ``patch.data`` with.
     :type codec: Codec
-    :param encode_kwargs: Forwarded verbatim to ``codec.encode`.
+    :param encode_kwargs: Forwarded verbatim to ``codec.encode``.
     :returns: A new Patch with the same coords/attrs, backed by a
         :class:`~comdas.arrays.duck_array.DuckArray`.
     :rtype: dascore.Patch

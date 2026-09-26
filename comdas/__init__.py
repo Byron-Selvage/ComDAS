@@ -3,7 +3,7 @@ ComDAS: compressed DAS patches for DASCore.
 
 ComDAS patches work identically to normal ``dascore.Patch`` objects,
 but the data they hold is stored compressed in memory
-(:class:`~comdas.arrays.compressed_array.CompressedArray`) and
+(:class:`~comdas.arrays.duck_array.DuckArray`) and
 decompressed on access. Compression is controlled via
 the :class:`~comdas.codecs.base.Codec` interface. Both the in-memory
 array and the on-disk ``COMDAS`` container format

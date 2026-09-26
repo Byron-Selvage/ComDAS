@@ -163,7 +163,7 @@ class Codec(ABC):
         This is an optional method, most codecs do not support random access
         writes. The default implementation always raises a
         :class:`NotImplementedError`, which
-        :class:`~comdas.arrays.compressed_array.CompressedArray`
+        :class:`~comdas.arrays.duck_array.DuckArray`
         interprets as "this codec or write attempt doesn't
         support true partial writes" and falls back to its overlay +
         :attr:`default_overlay_flush_threshold` strategy instead.
