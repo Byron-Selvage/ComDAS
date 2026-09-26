@@ -74,12 +74,11 @@ target/
 .DS_store*
 
 # docs
-docs/api/*
+docs/api/generated/
 _autosummary
 .quarto/
 docs/site_libs
 docs/_quarto.yml
-docs/**/*.ipynb
 .cross_ref.json
 
 # profile stuff from asv
