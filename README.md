@@ -9,7 +9,8 @@ Save patches as COMDAS HDF5 files and open them with DASCore's usual `dc.spool()
 
 - **SVD**: lossy truncated singular value decomposition. Choose a fixed rank with `SVDCodec(rank=XX)` or a retained-energy fraction with `SVDCodec(energy=0.XX)`. Lower ranks generally produce smaller files with more compression error.
 
-ComDAS is in active development. The file format and public API may change between releases.
+> [!NOTE]
+> ComDAS is in active development. The file format and public API may change between releases.
 
 ## Installation
 
