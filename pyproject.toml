@@ -28,6 +28,9 @@ dev = [
     "sphinx",
     "furo",
     "sphinx-autodoc-typehints",
+    "myst-nb",
+    "matplotlib",
+    "ipykernel",
 ]
 
 [tool.setuptools.packages.find]
