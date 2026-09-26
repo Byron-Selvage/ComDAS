@@ -2,57 +2,43 @@
 
 ![Python versions tested](https://img.shields.io/badge/Python-3.10%20%7C%203.11%20%7C%203.12%20%7C%203.13%20%7C%203.14-blue)
 
-ComDAS (Compressed DAS) is a companion package to [DASCore](https://github.com/DASDAE/dascore) that adds support for compressed DAS data. 
-Save patches as COMDAS HDF5 files and open them with DASCore's usual `dc.spool()` interface. 
+ComDAS (Compressed DAS) lets you store and work with compressed distributed acoustic sensing (DAS) data using ordinary [DASCore](https://dascore.org/) tools.
 
-## Supported codecs
+With ComDAS you can:
 
-- **SVD**: lossy truncated singular value decomposition. Choose a fixed rank with `SVDCodec(rank=XX)` or a retained-energy fraction with `SVDCodec(energy=0.XX)`. Lower ranks generally produce smaller files with more compression error.
+- **Shrink DAS data in memory.** Compress a DASCore patch and keep using it like any other.
+- **Save compressed files.** Write patches, spools, or whole directories of raw data to a compressed HDF5 file or files.
+- **Read compressed files with plain DASCore.** Once ComDAS is installed, `dascore.spool()` opens compressed files directly without needing to know how the data was compressed.
+- **Choose your compression level.** Pick a codec and set how much detail to keep, from near-lossless to aggressive compression.
+- **Implement your own algorithm.** Add a new compression method by writing a codec class.
 
 > [!NOTE]
 > ComDAS is in active development. The file format and public API may change between releases.
 
+## Supported codecs
+
+| Codec | Main setting | Reference |
+| --- | --- | --- |
+| [SVD](https://byron-selvage.github.io/ComDAS/codecs/svd.html) | `rank` or retained `energy` | [NumPy SVD](https://numpy.org/doc/1.22/reference/generated/numpy.linalg.svd.html) |
+| [Wavelet](https://byron-selvage.github.io/ComDAS/codecs/wavelet.html) | `keep_fraction` or `threshold` | [PyWavelets](https://doi.org/10.21105/joss.01237); [DeVore et al. (1992)](https://doi.org/10.1109/18.119733) |
+
 ## Installation
 
+ComDAS requires Python 3.10 or newer.
+
 ```bash
-git clone https://github.com/Byron-Selvage/ComDAS.git
-cd ComDAS
-pip install -e .
-```
-
-## Write compressed files
-
-The function `write_compressed` accepts a DASCore-readable file or directory, a patch, or a spool. It writes a COMDAS HDF5 file. Attempting to write to an existing COMDAS file appends patches.
-
-```python
-import dascore as dc
-from comdas import SVDCodec, write_compressed
-
-write_compressed("raw.h5", "compressed.h5", SVDCodec(rank=20))
-
-# A patch or spool can be written the same way.
-patch = dc.get_example_patch()
-write_compressed(patch, "example.h5", SVDCodec(energy=0.99))
-```
-
-## Read compressed files
-
-DASCore recognizes COMDAS files after ComDAS is installed. Read patches, inspect metadata, and select by coordinate range using the usual DASCore APIs. No codec needs to be supplied when reading.
-
-```python
-import dascore as dc
-
-spool = dc.spool("compressed.h5")
-patches = list(spool)
-metadata = dc.scan("compressed.h5")
-
-# Select a time range from a file-backed spool.
-selected = spool.select(time=(start_time, end_time))
+pip install comdas
 ```
 
 ## Documentation
 
-Documentation is available at [byron-selvage.github.io/ComDAS](https://byron-selvage.github.io/ComDAS/).
+Full documentation is available at [byron-selvage.github.io/ComDAS](https://byron-selvage.github.io/ComDAS/), including:
+
+- [Quick start](https://byron-selvage.github.io/ComDAS/quickstart.html): compress a patch, save a compressed file, and read it back
+- [Codecs](https://byron-selvage.github.io/ComDAS/codecs/svd.html): configuration options and examples for each codec
+- [Examples](https://byron-selvage.github.io/ComDAS/examples/compression_comparison.html)
+- [API reference](https://byron-selvage.github.io/ComDAS/api/index.html)
 
 ## License
+
 ComDAS is licensed under the [GNU Lesser General Public License](LICENSE).
