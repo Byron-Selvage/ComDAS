@@ -16,6 +16,7 @@ from comdas import write_compressed
 from comdas.arrays.duck_array import DuckArray
 from comdas.codecs.base import Codec
 from comdas.codecs.svd import SVDCodec
+from comdas.codecs.wavelet import WaveletCodec
 
 
 def make_random_matrix(m=40, n=60, seed=42):
@@ -92,7 +93,9 @@ class CodecContract(ABC):
 
         assert restored.original_shape == array.shape
         assert restored.dtype == array.dtype
-        np.testing.assert_allclose(codec.decode(restored), codec.decode(payload))
+        np.testing.assert_allclose(
+            codec.decode(restored), codec.decode(payload)
+        )
 
     def test_decode_partial_matches_full_decode(self):
         """
@@ -111,7 +114,9 @@ class CodecContract(ABC):
             (5, slice(None)),
             (slice(None), 7),
         ]:
-            np.testing.assert_allclose(codec.decode_partial(payload, key), full[key])
+            np.testing.assert_allclose(
+                codec.decode_partial(payload, key), full[key]
+            )
 
 
 class TestSVDCodec(CodecContract):
@@ -188,8 +193,70 @@ class TestSVDCodec(CodecContract):
         compressed = DuckArray(payload, codec)
 
         assert compressed.shape == array.shape
-        np.testing.assert_allclose(np.asarray(compressed), codec.decode(payload))
-        np.testing.assert_allclose(compressed[3, 4], codec.decode(payload)[3, 4])
+        np.testing.assert_allclose(
+            np.asarray(compressed), codec.decode(payload)
+        )
+        np.testing.assert_allclose(
+            compressed[3, 4], codec.decode(payload)[3, 4]
+        )
+
+
+class TestWaveletCodec(CodecContract):
+    def make_codec(self) -> WaveletCodec:
+        """
+        Codec instance for testing. Keeps 20% of wavelet coefficients.
+        """
+        return WaveletCodec(wavelet="db4", keep_fraction=0.2)
+
+    def test_encode_requires_exactly_one_of_keep_fraction_or_threshold(self):
+        """
+        WaveletCodec requires exactly one of 'keep_fraction' or 'threshold'.
+        """
+        codec = WaveletCodec()
+        array = make_random_matrix()
+        with pytest.raises(ValueError):
+            codec.encode(array)
+        with pytest.raises(ValueError):
+            codec.encode(array, keep_fraction=0.5, threshold=0.1)
+        with pytest.raises(ValueError):
+            WaveletCodec(keep_fraction=0.5, threshold=0.1)
+
+    def test_invalid_keep_fraction_raises(self):
+        """
+        Invalid keep_fraction values should raise a ValueError.
+        """
+        with pytest.raises(ValueError):
+            WaveletCodec(keep_fraction=0.0).encode(make_random_matrix())
+        with pytest.raises(ValueError):
+            WaveletCodec(keep_fraction=1.5).encode(make_random_matrix())
+
+    @pytest.mark.parametrize("shape", [(40, 60), (41, 63), (1, 100)])
+    def test_keep_all_is_lossless(self, shape):
+        """
+        Keeping every coefficient should be lossless.
+        """
+        array = np.random.default_rng(0).normal(size=shape)
+        codec = WaveletCodec(wavelet="db4", keep_fraction=1.0)
+        np.testing.assert_allclose(
+            codec.decode(codec.encode(array)), array, atol=1e-10
+        )
+
+    def test_keep_fraction_controls_coefficient_count(self):
+        """
+        Checks that keep fraction calculates the number of coeffs to keep correctly.
+        """
+        codec = WaveletCodec(keep_fraction=0.1)
+        payload = codec.encode(make_random_matrix())
+        assert payload.values.size == round(0.1 * payload.n_coeffs)
+        assert codec.compression_ratio(payload) > 1
+
+    def test_threshold_keeps_large_coefficients(self):
+        """
+        Only coefficients larger than the threshold should be kept.
+        """
+        codec = WaveletCodec(threshold=1.0)
+        payload = codec.encode(make_random_matrix())
+        assert np.all(np.abs(payload.values) > 1.0)
 
 
 if __name__ == "__main__":

@@ -13,9 +13,18 @@ registered codec by name rather than hardcoding a specific one.
 
 from comdas.codecs.base import Codec, CompressedPayload
 from comdas.codecs.svd import SVDCodec, SVDPayload
+from comdas.codecs.wavelet import WaveletCodec, WaveletPayload
 from comdas.arrays.duck_array import DuckArray
 
-__all__ = ["Codec", "CompressedPayload", "SVDCodec", "SVDPayload", "DuckArray"]
+__all__ = [
+    "Codec",
+    "CompressedPayload",
+    "SVDCodec",
+    "SVDPayload",
+    "WaveletCodec",
+    "WaveletPayload",
+    "DuckArray",
+]
 
 try:
     from comdas.utils import compress_patch  # requires dascore installed
