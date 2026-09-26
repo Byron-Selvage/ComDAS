@@ -3,6 +3,7 @@ Utility functions for working with compressed patches.
 Includes:
 - :func:`compress_patch` Compress an in-memory DASCore patch's data using a specified codec.
 """
+
 from __future__ import annotations
 
 import numpy as np
