@@ -38,7 +38,9 @@ def test_write_read_roundtrip(tmp_path):
     assert np.array_equal(np.asarray(p2.data), patch.data)
 
     for dim in patch.dims:
-        assert np.array_equal(p2.coords.get_array(dim), patch.coords.get_array(dim))
+        assert np.array_equal(
+            p2.coords.get_array(dim), patch.coords.get_array(dim)
+        )
 
     assert p2.attrs.tag == patch.attrs.tag
 
@@ -86,8 +88,12 @@ def test_append_and_dim_range_selection(tmp_path):
     pick the right patch out of a multi-patch file rather than always the first.
     """
     p1 = dc.get_example_patch()
-    p2 = dc.get_example_patch().update_attrs(tag="second").update_coords(
-        time=p1.coords.get_array("time") + np.timedelta64(1, "h")
+    p2 = (
+        dc.get_example_patch()
+        .update_attrs(tag="second")
+        .update_coords(
+            time=p1.coords.get_array("time") + np.timedelta64(1, "h")
+        )
     )
     out_path = tmp_path / "multi.h5"
 
