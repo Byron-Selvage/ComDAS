@@ -12,6 +12,7 @@ import numpy as np
 
 from comdas.codecs.base import Codec, CompressedPayload
 
+
 class DuckArray(np.lib.mixins.NDArrayOperatorsMixin):
     """
     A NumPy-like duck array backed by a compressed payload and codec defining
@@ -162,7 +163,9 @@ class DuckArray(np.lib.mixins.NDArrayOperatorsMixin):
         :param kwargs: Keyword arguments to the ufunc.
         :returns: The result of calling the ufunc on materialized arrays.
         """
-        inputs = [np.asarray(i) if isinstance(i, DuckArray) else i for i in inputs]
+        inputs = [
+            np.asarray(i) if isinstance(i, DuckArray) else i for i in inputs
+        ]
         return getattr(ufunc, method)(*inputs, **kwargs)
 
     def __repr__(self) -> str:
@@ -227,7 +230,9 @@ class DuckArray(np.lib.mixins.NDArrayOperatorsMixin):
             for idx, val in self._overlay.items()
             if all(idx[d] in axes_sets[d] for d in range(self.ndim))
         ]
-        base = np.array(self._codec.decode_partial(self._payload, key), copy=True)
+        base = np.array(
+            self._codec.decode_partial(self._payload, key), copy=True
+        )
         if not touched:
             return base
 
@@ -265,7 +270,9 @@ class DuckArray(np.lib.mixins.NDArrayOperatorsMixin):
         """
         if self._codec.supports_partial_write():
             try:
-                self._payload = self._codec.partial_write(self._payload, key, value)
+                self._payload = self._codec.partial_write(
+                    self._payload, key, value
+                )
                 return
             except NotImplementedError:
                 pass
@@ -275,7 +282,10 @@ class DuckArray(np.lib.mixins.NDArrayOperatorsMixin):
         for a in axes:
             size *= len(a)
 
-        if size > self._max_pending_writes or (self.overlay_size + size) > self._max_pending_writes:
+        if (
+            size > self._max_pending_writes
+            or (self.overlay_size + size) > self._max_pending_writes
+        ):
             dense = self.__array__()
             dense[key] = value
             self.consolidate(dense=dense)
